@@ -33,7 +33,7 @@ list_choices <-  unique(Clothing$Card)
 
 ########################################
 
-ui <- navbarPage("Shiny app",tabPanel("msleep",
+ui <- navbarPage("Shiny app",tabPanel("Clothing Summary",
                                       fluidPage(
                                         sidebarLayout(sidebarPanel(
                                           selectInput("select", label = h3("Plot by type of card"), 
@@ -57,16 +57,16 @@ col_scale <- scale_colour_discrete(limits = list_choices)
 
 server <- function(input, output) {
   output$hello <- renderPlot({
-    ggplot(msleep %>% filter(Card == input$select)
+    ggplot(Clothing %>% filter(Card == input$select)
            , aes(Dollar12,Dollar24, colour = Card)) +
       scale_x_log10() +
       col_scale +
       geom_point()
   })
   output$info <- renderTable({
-    nearPoints(msleep 
+    nearPoints(Clothing
                %>% filter(Card == input$select) 
-               %>% select(name, Dollar12,  Dollar24, Amount, Recency), 
+               %>% select(Card, Dollar12,  Dollar24, Amount, Recency), 
                input$plot_click, threshold = 10, maxpoints = 1,
                addDist = TRUE)
   })
