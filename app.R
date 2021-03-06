@@ -9,27 +9,28 @@ library(Stat2Data)
 
 ######################################## DATA PREPARATION
 data(Clothing)
-Clothing <- Clothing[-60,] # Missing Value
+Clothing <- Clothing[-60,-1] # Missing Value
 Clothing$Card <- as.factor(Clothing$Card) # Categorical variable
 
 
 card=matrix(0,nrow=nrow(Clothing),ncol=1)
 for (i in 1:nrow(card)){
-  if(Clothing[i,8]==1){
+  if(Clothing[i,7]==1){
     card[i]="Private label"
   }
-  if(Clothing[i,8]==0){
+  if(Clothing[i,7]==0){
     card[i]="Public label"
   }
 }
 
 Clothing$Card <- as.factor(card)
 
+
 ########################################
 
 
 list_choices <-  unique(Clothing$Card)
-
+variable_num_choices <- colnames(Clothing[,-7])
 
 ######################################## ui panel 
 
@@ -41,7 +42,7 @@ ui <- navbarPage("Shiny app",tabPanel(" Plot Clothing",
                                                       selected = 1)
                                         ), 
                                         mainPanel(
-                                          plotOutput(outputId = "button", click = "plot_click"),
+                                          plotOutput(outputId = "ploty", click = "plot_click"),
                                           tableOutput("info")
                                         )
                                         ))),
@@ -63,9 +64,22 @@ ui <- navbarPage("Shiny app",tabPanel(" Plot Clothing",
                               # Output: HTML table with requested number of observations ----
                               tableOutput("view"))
                               
-                              
+                      
                             )
-                          ))
+                          ),
+                 tabPanel(" Plot Clothing",
+                          fluidPage(
+                            sidebarLayout(sidebarPanel(
+                              selectInput("select", label = h3("Plot by variable"), 
+                                          choices = variable_choices,
+                                          selected = 1)
+                            ), 
+                            mainPanel(
+                              plotOutput(outputId = "box")
+                            )
+                            )))
+                 
+                 )
                  
                  
 
@@ -78,14 +92,21 @@ col_scale <- scale_colour_discrete(limits = list_choices)
 
 
 server <- function(input, output) {
-  output$button <- renderPlot({
+  output$ploty <- renderPlot({
     ggplot(Clothing %>% filter(Card == input$select)
            , aes(Dollar12,Dollar24, colour = Card)) +
+      ggtitle("Point plot my Shiny app")+
       scale_x_log10() +
       col_scale +
       theme_bw()+
       geom_point()
   })
+  
+  
+  
+  
+  
+  
   output$info <- renderTable({
     nearPoints(Clothing
                %>% filter(Card == input$select) 
