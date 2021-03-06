@@ -26,3 +26,64 @@ for (i in 1:nrow(card)){
 Clothing$Card <- as.factor(card)
 
 ########################################
+
+
+list_choices <-  unique(Clothing$Card)
+
+
+########################################
+
+ui <- navbarPage("Shiny app",tabPanel("msleep",
+                                      fluidPage(
+                                        sidebarLayout(sidebarPanel(
+                                          selectInput("select", label = h3("Plot by type of card"), 
+                                                      choices = list_choices,
+                                                      selected = 1)
+                                        ), 
+                                        mainPanel(
+                                          plotOutput(outputId = "hello", click = "plot_click"),
+                                          tableOutput("info")
+                                        )
+                                        )))
+)
+
+########################################
+
+col_scale <- scale_colour_discrete(limits = list_choices)
+
+
+########################################
+
+
+server <- function(input, output) {
+  output$hello <- renderPlot({
+    ggplot(msleep %>% filter(Card == input$select)
+           , aes(Dollar12,Dollar24, colour = Card)) +
+      scale_x_log10() +
+      col_scale +
+      geom_point()
+  })
+  output$info <- renderTable({
+    nearPoints(msleep 
+               %>% filter(Card == input$select) 
+               %>% select(name, Dollar12,  Dollar24, Amount, Recency), 
+               input$plot_click, threshold = 10, maxpoints = 1,
+               addDist = TRUE)
+  })
+  samples <- reactive({
+    input$goButton;
+    dist <- eval(parse(text=paste(input$dist)))
+    dist(isolate(input$n_sample))
+  });
+}
+
+
+
+
+
+
+
+
+
+################################# Run the application 
+shinyApp(ui = ui, server = server)
