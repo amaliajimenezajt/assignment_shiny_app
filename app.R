@@ -41,7 +41,7 @@ ui <- navbarPage("Shiny app",tabPanel(" Plot Clothing",
                                                       selected = 1)
                                         ), 
                                         mainPanel(
-                                          plotOutput(outputId = "hello", click = "plot_click"),
+                                          plotOutput(outputId = "button", click = "plot_click"),
                                           tableOutput("info")
                                         )
                                         ))),
@@ -49,11 +49,12 @@ ui <- navbarPage("Shiny app",tabPanel(" Plot Clothing",
                           fluidPage(
                             sidebarLayout(
                               selectInput(inputId = "dataset",
-                                          label = "Choose a dataset:",
-                                          choices = c("Amount", "Recency")),
+                                          label = "Choose a variable:",
+                                          choices = c("Amount", "Recency","Freq12","Dollar12","Freq24","Dollar24")),
                               numericInput(inputId = "obs",
                                            label = "Number of observations to view:",
-                                           value = 10)),
+                                           value = 10)
+                              ),
                             mainPanel(
                               
                               # Output: Verbatim text for data summary ----
@@ -77,11 +78,12 @@ col_scale <- scale_colour_discrete(limits = list_choices)
 
 
 server <- function(input, output) {
-  output$hello <- renderPlot({
+  output$button <- renderPlot({
     ggplot(Clothing %>% filter(Card == input$select)
            , aes(Dollar12,Dollar24, colour = Card)) +
       scale_x_log10() +
       col_scale +
+      theme_bw()+
       geom_point()
   })
   output$info <- renderTable({
@@ -98,9 +100,13 @@ server <- function(input, output) {
   });
   
   datasetInput <- reactive({
-    switch(input$Clothin,
-           "Amount" = Amount,
-           "Recency" = Recency)
+    switch(input$dataset,
+           "Amount" = Clothing$Amount,
+           "Recency" = Clothing$Recency,
+           "Freq12"=Clothing$Freq12,
+           "Dollar12"=Clothing$Dollar12,
+           "Freq24"=Clothing$Freq24,
+           "Dollar24"=Clothing$Dollar24)
   })
   
   output$summary <- renderPrint({
@@ -114,7 +120,6 @@ server <- function(input, output) {
   
   
 }
-
 
 
 
