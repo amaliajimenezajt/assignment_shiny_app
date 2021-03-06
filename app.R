@@ -4,7 +4,7 @@ library(shiny)
 library(tidyverse)
 library(shinyjs)
 library(Stat2Data)
-
+library(ggplot2)
 
 
 ######################################## DATA PREPARATION
@@ -67,10 +67,10 @@ ui <- navbarPage("Shiny app",tabPanel(" Plot Clothing",
                       
                             )
                           ),
-                 tabPanel(" Plot Clothing",
+                 tabPanel("Plot Clothing",
                           fluidPage(
                             sidebarLayout(sidebarPanel(
-                              selectInput("select", label = h3("Plot by variable"), 
+                              selectInput("select2", label = h3("Plot by variable"), 
                                           choices = variable_num_choices,
                                           selected = 1)
                             ), 
@@ -92,6 +92,7 @@ col_scale <- scale_colour_discrete(limits = list_choices)
 
 
 server <- function(input, output) {
+  
   output$ploty <- renderPlot({
     ggplot(Clothing %>% filter(Card == input$select)
            , aes(Dollar12,Dollar24, colour = Card)) +
@@ -101,17 +102,17 @@ server <- function(input, output) {
       theme_bw()+
       geom_point()
   })
-  output$box <- renderPlot({
-    
-    ggplot(Clothing, aes(x=0,y=Clothing %>% filter(Card == input$select)))+ 
-      geom_boxplot(color="black",fill="lightslateblue",alpha=0.2,notch=TRUE,
-                   notchwidth = 0.8,outlier.colour="red",outlier.fill="red",
-                   outlier.size=3)+
-      stat_summary(fun.y=mean, geom="point", shape=18,size=3, color="red")+
-      labs(title="Boxplot Recency", y="Recency")+
-      theme_bw() +
-      scale_fill_manual(values=c('lightcyan1'))
   
+  
+output$box <- renderPlot({
+  ggplot(data=Clothing, aes(Clothing$Card, Clothing[,input$select2])) + 
+    geom_boxplot(color="black",fill=c("cyan3",'darkgoldenrod1'),alpha=0.2,
+                 notchwidth = 0.8,outlier.colour="red",outlier.fill="red",
+                 outlier.size=3)+
+    stat_summary(fun.y=mean, geom="point", shape=18,
+    size=3, color="red")+
+    theme_bw() +
+    scale_fill_manual(values=c('lightcyan1'))
   })
   
 
