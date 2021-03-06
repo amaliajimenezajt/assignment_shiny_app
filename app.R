@@ -31,9 +31,9 @@ Clothing$Card <- as.factor(card)
 list_choices <-  unique(Clothing$Card)
 
 
-########################################
+######################################## ui panel 
 
-ui <- navbarPage("Shiny app",tabPanel("Clothing Summary",
+ui <- navbarPage("Shiny app",tabPanel(" Plot Clothing",
                                       fluidPage(
                                         sidebarLayout(sidebarPanel(
                                           selectInput("select", label = h3("Plot by type of card"), 
@@ -44,8 +44,29 @@ ui <- navbarPage("Shiny app",tabPanel("Clothing Summary",
                                           plotOutput(outputId = "hello", click = "plot_click"),
                                           tableOutput("info")
                                         )
-                                        )))
-)
+                                        ))),
+                 tabPanel("Summary Data",
+                          fluidPage(
+                            sidebarLayout(
+                              selectInput(inputId = "dataset",
+                                          label = "Choose a dataset:",
+                                          choices = c("Amount", "Recency")),
+                              numericInput(inputId = "obs",
+                                           label = "Number of observations to view:",
+                                           value = 10)),
+                            mainPanel(
+                              
+                              # Output: Verbatim text for data summary ----
+                              verbatimTextOutput("summary"),
+                              
+                              # Output: HTML table with requested number of observations ----
+                              tableOutput("view"))
+                              
+                              
+                            )
+                          ))
+                 
+                 
 
 ########################################
 
@@ -75,6 +96,23 @@ server <- function(input, output) {
     dist <- eval(parse(text=paste(input$dist)))
     dist(isolate(input$n_sample))
   });
+  
+  datasetInput <- reactive({
+    switch(input$Clothin,
+           "Amount" = Amount,
+           "Recency" = Recency)
+  })
+  
+  output$summary <- renderPrint({
+    dataset <- datasetInput()
+    summary(dataset)
+  })
+  
+  output$view <- renderTable({
+    head(datasetInput(), n = input$obs)
+  })
+  
+  
 }
 
 
