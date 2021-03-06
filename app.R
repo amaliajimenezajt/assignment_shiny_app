@@ -71,7 +71,7 @@ ui <- navbarPage("Shiny app",tabPanel(" Plot Clothing",
                           fluidPage(
                             sidebarLayout(sidebarPanel(
                               selectInput("select", label = h3("Plot by variable"), 
-                                          choices = variable_choices,
+                                          choices = variable_num_choices,
                                           selected = 1)
                             ), 
                             mainPanel(
@@ -101,11 +101,20 @@ server <- function(input, output) {
       theme_bw()+
       geom_point()
   })
+  output$box <- renderPlot({
+    
+    ggplot(Clothing, aes(x=0,y=Clothing %>% filter(Card == input$select)))+ 
+      geom_boxplot(color="black",fill="lightslateblue",alpha=0.2,notch=TRUE,
+                   notchwidth = 0.8,outlier.colour="red",outlier.fill="red",
+                   outlier.size=3)+
+      stat_summary(fun.y=mean, geom="point", shape=18,size=3, color="red")+
+      labs(title="Boxplot Recency", y="Recency")+
+      theme_bw() +
+      scale_fill_manual(values=c('lightcyan1'))
   
+  })
   
-  
-  
-  
+
   
   output$info <- renderTable({
     nearPoints(Clothing
