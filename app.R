@@ -1,4 +1,4 @@
-## This is my shiny app application
+## This is my shiny app application, click on Run App to show 
 
 library(shiny)
 library(tidyverse)
