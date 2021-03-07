@@ -5,6 +5,7 @@ library(tidyverse)
 library(shinyjs)
 library(Stat2Data)
 library(ggplot2)
+library(shinythemes)
 
 
 ######################################## DATA PREPARATION
@@ -34,18 +35,8 @@ variable_num_choices <- colnames(Clothing[,-7])
 
 ######################################## ui panel 
 
-ui <- navbarPage("Shiny app",tabPanel(" Plot Clothing",
-                                      fluidPage(
-                                        sidebarLayout(sidebarPanel(
-                                          selectInput("select", label = h3("Plot by type of card"), 
-                                                      choices = list_choices,
-                                                      selected = 1)
-                                        ), 
-                                        mainPanel(
-                                          plotOutput(outputId = "ploty", click = "plot_click"),
-                                          tableOutput("info")
-                                        )
-                                        ))),
+ui <- navbarPage("Shiny app",
+                 theme = shinytheme("superhero"),
                  tabPanel("Summary Data",
                           fluidPage(
                             sidebarLayout(
@@ -55,7 +46,7 @@ ui <- navbarPage("Shiny app",tabPanel(" Plot Clothing",
                               numericInput(inputId = "obs",
                                            label = "Number of observations to view:",
                                            value = 10)
-                              ),
+                            ),
                             mainPanel(
                               
                               # Output: Verbatim text for data summary ----
@@ -63,14 +54,27 @@ ui <- navbarPage("Shiny app",tabPanel(" Plot Clothing",
                               
                               # Output: HTML table with requested number of observations ----
                               tableOutput("view"))
-                              
-                      
-                            )
-                          ),
-                 tabPanel("Plot Clothing",
+                            
+                            
+                          )
+                 ),
+                 tabPanel(" Plot Clothing",
+                                      fluidPage(
+                                        sidebarLayout(sidebarPanel(
+                                          selectInput("select", label = h3("Plot by type of credit-card:"), 
+                                                      choices = list_choices,
+                                                      selected = 1)
+                                        ), 
+                                        mainPanel(
+                                          plotOutput(outputId = "ploty", click = "plot_click"),
+                                          tableOutput("info")
+                                        )
+                                        ))),
+                 
+                 tabPanel("Box-Plot",
                           fluidPage(
                             sidebarLayout(sidebarPanel(
-                              selectInput("select2", label = h3("Plot by variable"), 
+                              selectInput("select2", label = h3("Plot by variable:"), 
                                           choices = variable_num_choices,
                                           selected = 1)
                             ), 
