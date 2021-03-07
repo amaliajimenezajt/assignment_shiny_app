@@ -40,6 +40,10 @@ ui <- navbarPage("Shiny app",
                  tabPanel("Summary Data",
                           fluidPage(
                             sidebarLayout(
+                              sidebarPanel (h3(strong("Data Summary")),
+                                            p("This shiny app is inspired in the HTML Presentation about the data set",
+                                              code("Clothing"),"whish in the first Panel we are able to see a summary of each variable,
+                                              in the second a Plot about the Numeric variable and finally a boxplot set."),
                               selectInput(inputId = "dataset",
                                           label = "Choose a variable:",
                                           choices = c("Amount", "Recency","Freq12","Dollar12","Freq24","Dollar24")),
@@ -56,8 +60,8 @@ ui <- navbarPage("Shiny app",
                               tableOutput("view"))
                             
                             
-                          )
-                 ),
+                          
+                 ))),
                  tabPanel(" Plot Clothing",
                                       fluidPage(
                                         sidebarLayout(sidebarPanel(
